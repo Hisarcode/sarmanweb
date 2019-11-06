@@ -1,0 +1,111 @@
+<?php include_once("koneksi.php"); ?>
+
+<div id="content">
+<div class="content-detail">
+	<font face=arial size=1>
+	&nbsp|&nbsp;<a href="input_mk.php">INPUT AGAIN</a>&nbsp|&nbsp;
+	&nbsp|&nbsp;<a href="search_mk.php">INPUT AGAIN</a>&nbsp|&nbsp;
+	</font>
+
+	<br><br>
+
+<strong>Daftar Mata Kuliah : </strong>
+
+<br><br>
+
+<table border="1">
+	<tr>
+		<td><b>Kode MK</b></td>
+		<td><b>Nama MK</b></td>
+		<td><b>Sks</b></td>
+		<td><b>Semester</b></td>		
+	</tr>
+
+
+	<?php
+//PAGING
+	$count = 0;
+	if(isset($_GET['page']))
+	$hal = $_GET['page'];
+	else
+	$hal = 0;
+	
+	if(isset($_GET['page']))
+	$jlh = $_GET['count'];
+	else
+	$jlh = 0;
+if($jlh <= 0){
+	$count = 0;
+}
+else{
+	$count = $jlh;
+}
+
+$a = "SELECT COUNT(kode_mk) from mata_kuliah";
+$b = mysqli_query($konek , $a) or die (mysqli_error());
+while ($row = mysql_fetch_row($b))
+{
+	$c = $row[0];
+}
+
+$d = floor(($c-1)/15)+1;
+
+if($hal<=0){ $hal = 1;}
+if($hal> $d){ $hal = $d ;}
+// 
+$batas = (15*($hal - 1));
+if ($batas < 0 ){ $batas2 = 0; }
+else {$batas2 = $batas;} 
+//PAGING
+	
+	// prerintah menampilkan  mk
+
+	$perintah= "SELECT * FROM mata_kuliah order BY  'smt' ASC LIMIT ".$batas2.", 15";
+	$hasil= mysqli_query($konek, $perintah);
+	while($row= mysqli_fetch_array($hasil))
+	{
+		echo "<tr>";
+		echo "<td>$row[0]</td>";
+		echo "<td>$row[1]</td>";
+		echo "<td>$row[2]</td>";
+		echo "<td>$row[3]</td>";
+		
+		echo "<td><a href=\"edit_mk.php?id=$row[0]\">Edit</a></td>";
+		echo "<td><a href=\"confirm.php?id=$row[0]\">Delete</a></td></tr>";
+
+		$count++;
+	}
+
+	?>	
+</table>
+
+</div>
+</div>
+
+
+<table>
+	<tr>
+		<td>
+			<?php
+			if ($hal>1){
+				echo "<a href='?page=".($hal-1)."&count=".(($hal*5)-15)."'><b>&lt;&lt;Previous</b></a>";
+			}
+			else{
+				echo "&lt;&lt;Previous";
+			}
+
+			if ($hal>$d){
+				echo "&nbsp;&nbsp;&nbsp;<a href='?page=".($hal+1)."&count=".($hal*15)."'><b>Next&gt;&gt;</b></a>";
+			}
+			else{
+				echo "&nbsp;&nbsp;&nbsp;Next&gt;&gt;";
+			}
+
+			?>
+		</td>
+	</tr>
+	
+	<tr><td>Halaman : <b><?php echo $hal;?></b></td></tr>
+	<tr><td>Total MK : <b><?php echo $c;?></b></td></tr>
+
+</table>
